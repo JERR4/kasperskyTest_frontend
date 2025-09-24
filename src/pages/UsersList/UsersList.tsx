@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {fetchUsers} from '../../api/users.ts';
 import {fetchGroups} from '../../api/groups.ts';
 import type {Group, User} from '../../types/types.ts';
@@ -22,32 +22,57 @@ import {TransitionGroup} from 'react-transition-group';
 import UserForm from "../../components/UserForm.tsx";
 
 const UsersList: React.FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
     type ErrorItem = { id: string; message: string };
     const width = useWindowWidth();
     const isMobile = width < 640;
-
-    const navigate = useNavigate();
 
     const [users, setUsers] = useState<User[]>([]);
     const [total, setTotal] = useState(0);
     const [errors, setErrors] = useState<ErrorItem[]>([]);
     const [loading, setLoading] = useState(false);
-
-    const [page, setPage] = useState(1);
     const [limit] = useState(50);
 
-    const [nameSearch, setNameSearch] = useState('');
-    const [emailSearch, setEmailSearch] = useState('');
-    const [nameInput, setNameInput] = useState('');
-    const [emailInput, setEmailInput] = useState('');
-
-    const [sortBy, setSortBy] = useState<'name' | 'email' | 'age'>('name');
-    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-
     const [groups, setGroups] = useState<Group[]>([]);
-    const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-
     const timersRef = useRef<Record<string, number>>({});
+
+    const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+    const [nameSearch, setNameSearch] = useState(searchParams.get("name") || "");
+    const [emailSearch, setEmailSearch] = useState(searchParams.get("email") || "");
+    const [nameInput, setNameInput] = useState(searchParams.get("name") || "");
+    const [emailInput, setEmailInput] = useState(searchParams.get("email") || "");
+    const [sortBy, setSortBy] = useState<'name' | 'email' | 'age'>(
+        (searchParams.get("sortBy") as 'name' | 'email' | 'age') || "name"
+    );
+    const [order, setOrder] = useState<'asc' | 'desc'>(
+        (searchParams.get("order") as 'asc' | 'desc') || "asc"
+    );
+    const [selectedGroupId, setSelectedGroupId] = useState<number>(
+        searchParams.get("group") === "none"
+            ? NaN // маркер "без группы"
+            : searchParams.get("group")
+                ? Number(searchParams.get("group"))
+                : -1
+    );
+
+    useEffect(() => {
+        const params: Record<string, string> = {};
+        if (page > 1) params.page = String(page);
+        if (nameSearch) params.name = nameSearch;
+        if (emailSearch) params.email = emailSearch;
+        if (sortBy !== "name") params.sortBy = sortBy;
+        if (order !== "asc") params.order = order;
+        if (selectedGroupId === -1) {
+            // не указываем — "любая группа"
+        } else if (Number.isNaN(selectedGroupId)) {
+            params.group = "none";
+        } else {
+            params.group = String(selectedGroupId);
+        }
+        setSearchParams(params, { replace: true });
+    }, [page, nameSearch, emailSearch, sortBy, order, selectedGroupId]);
 
     const addError = (message: string, ttl = 4000) => {
         const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
