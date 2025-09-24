@@ -2,7 +2,7 @@ export type ValidationErrors<T> = {
     [K in keyof T]?: string;
 };
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 function validateName(name: string): string | undefined {
     if (name.length < 2 || name.length > 30) {
