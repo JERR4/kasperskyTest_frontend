@@ -10,7 +10,7 @@ type HeaderProps = {
 
 export default function Header({ toggleTheme, darkMode }: HeaderProps) {
     return (
-        <AppBar position="fixed" sx={{ width: "100vw", zIndex: 1300 }}>
+        <AppBar position="fixed" sx={{ width: "100vw", zIndex: 1300, background: "linear-gradient(90deg, #646cff, #4fc3f7)",}}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography
                     variant="h6"
