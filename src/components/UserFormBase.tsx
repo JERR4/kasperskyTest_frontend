@@ -60,13 +60,10 @@ const UserFormBase: React.FC<Props> = ({
 
             return newErrors;
         });
-
-        console.log(errors)
     };
 
 
     const handleSubmit = (e: React.FormEvent) => {
-        debugger;
         e.preventDefault();
         const newErrors = validateUser(values);
         setErrors(newErrors);
