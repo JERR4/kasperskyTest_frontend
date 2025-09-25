@@ -51,7 +51,7 @@ const UsersList: React.FC = () => {
     );
     const [selectedGroupId, setSelectedGroupId] = useState<number>(
         searchParams.get("group") === "none"
-            ? NaN // маркер "без группы"
+            ? NaN
             : searchParams.get("group")
                 ? Number(searchParams.get("group"))
                 : -1
@@ -73,6 +73,25 @@ const UsersList: React.FC = () => {
         }
         setSearchParams(params, { replace: true });
     }, [page, nameSearch, emailSearch, sortBy, order, selectedGroupId]);
+
+    useEffect(() => {
+        setPage(Number(searchParams.get("page")) || 1);
+        setNameSearch(searchParams.get("name") || "");
+        setEmailSearch(searchParams.get("email") || "");
+        setNameInput(searchParams.get("name") || "");
+        setEmailInput(searchParams.get("email") || "");
+        setSortBy(
+            (searchParams.get("sortBy") as 'name' | 'email' | 'age') || "name"
+        );
+        setOrder((searchParams.get("order") as 'asc' | 'desc') || "asc");
+        setSelectedGroupId(
+            searchParams.get("group") === "none"
+                ? NaN
+                : searchParams.get("group")
+                    ? Number(searchParams.get("group"))
+                    : -1
+        );
+    }, [searchParams]);
 
     const addError = (message: string, ttl = 4000) => {
         const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -244,8 +263,29 @@ const UsersList: React.FC = () => {
                         />
                     )
                 ) : (
-                    <Box flex={1} fontSize={18} display="flex" justifyContent="center" alignItems="center" textAlign="center" >
-                        {loading ? <CircularProgress /> : 'Пользователи не найдены'}
+                    <Box
+                        flex={1}
+                        fontSize={18}
+                        display="flex"
+                        flexDirection="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        textAlign="center"
+                        gap={2}
+                    >
+                        {loading ? (
+                            <CircularProgress />
+                        ) : (
+                            <>
+                                <Box
+                                    component="img"
+                                    src="/not-found.jpg"
+                                    alt="Not Found"
+                                    sx={{ width: 150, height: "auto", opacity: 0.8 }}
+                                />
+                                Пользователи не найдены
+                            </>
+                        )}
                     </Box>
                 )}
 
