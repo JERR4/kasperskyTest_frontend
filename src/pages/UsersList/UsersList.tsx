@@ -3,8 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchUsers } from '../../api/users.ts';
 import { fetchGroups } from '../../api/groups.ts';
 import type { Group, User } from '../../types/types.ts';
-import UserTable from '../../components/UserTable.tsx';
-import Pagination from '../../components/Pagination.tsx';
+import UserTable from '../../components/UserTable/UserTable.tsx';
+import Pagination from '../../components/Pagination/Pagination.tsx';
 import './UsersList.css';
 import {
   Box,
@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 
-import UserForm from '../../components/UserForm.tsx';
+import UserForm from '../../components/UserForm/UserForm.tsx';
 import { Helmet } from 'react-helmet';
 
 const UsersList: React.FC = () => {
