@@ -25,9 +25,7 @@ import { Helmet } from 'react-helmet';
 const UsersList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-
-  const width = useWindowWidth();
-  const isMobile = width < 640;
+  const isMobile = useWindowWidth() < 640;
 
   const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
