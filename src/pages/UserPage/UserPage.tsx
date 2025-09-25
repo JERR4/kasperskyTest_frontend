@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchUser, updateUser, deleteUser } from '../../api/users.ts';
 import { fetchGroups } from '../../api/groups.ts';
@@ -18,7 +18,7 @@ import {
   DialogTitle,
   Button,
 } from '@mui/material';
-import './UserPage.css';
+import styles from './UserPage.module.css';
 import { StatusCodes } from 'http-status-codes';
 
 const UserPage: React.FC = () => {
@@ -62,37 +62,42 @@ const UserPage: React.FC = () => {
     void loadData();
   }, [id]);
 
-  const handleChange = (field: keyof typeof values, value: string | number | 'none') => {
-    setValues((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleChange = useCallback(
+    (field: keyof typeof values, value: string | number | 'none') => {
+      setValues((prev) => ({ ...prev, [field]: value }));
+    },
+    [setValues],
+  );
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    setSaving(true);
-    try {
-      await updateUser(Number(id), {
-        name: values.name.trim(),
-        email: values.email.trim(),
-        age: Number(values.age),
-        groupId: values.groupId === 'none' ? undefined : values.groupId,
-      });
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      const error = err as AxiosError;
-      if (error.response?.status === StatusCodes.CONFLICT) {
-        setError('Пользователь с таким email уже существует');
-      } else {
-        setError('Не удалось сохранить пользователя');
+  const handleSave = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError('');
+      setSaving(true);
+      try {
+        await updateUser(Number(id), {
+          name: values.name.trim(),
+          email: values.email.trim(),
+          age: Number(values.age),
+          groupId: values.groupId === 'none' ? undefined : values.groupId,
+        });
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } catch (err) {
+        const error = err as AxiosError;
+        if (error.response?.status === StatusCodes.CONFLICT) {
+          setError('Пользователь с таким email уже существует');
+        } else {
+          setError('Не удалось сохранить пользователя');
+        }
+      } finally {
+        setSaving(false);
       }
-    } finally {
-      setSaving(false);
-    }
-  };
+    },
+    [id, values],
+  );
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     try {
       await deleteUser(Number(id));
       navigate('/');
@@ -101,7 +106,7 @@ const UserPage: React.FC = () => {
     } finally {
       setDeleteDialogOpen(false);
     }
-  };
+  }, [id, navigate]);
 
   if (loading) {
     return (
@@ -118,7 +123,7 @@ const UserPage: React.FC = () => {
       </Helmet>
       <UserBreadcrumbs userName={values.name} />
       <Box maxWidth={600} mx="auto">
-        <Typography className="userHeader" variant="h4" mb={3}>
+        <Typography className={styles.userHeader} variant="h4" mb={3}>
           Редактирование пользователя
         </Typography>
 

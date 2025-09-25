@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -26,9 +26,14 @@ const UserTable: React.FC<UserTableProps> = ({
   onSort,
   onRowClick,
 }) => {
-  const handleSort = (field: 'name' | 'email' | 'age') => {
-    if (onSort) onSort(field);
-  };
+  const handleSort = useCallback(
+    (field: 'name' | 'email' | 'age') => {
+      onSort?.(field);
+    },
+    [onSort],
+  );
+
+  const handleRowClick = useCallback((user: User) => () => onRowClick?.(user), [onRowClick]);
 
   return (
     <TableContainer component={Paper}>
@@ -72,7 +77,7 @@ const UserTable: React.FC<UserTableProps> = ({
               key={user.id}
               hover
               style={{ cursor: onRowClick ? 'pointer' : 'default' }}
-              onClick={() => onRowClick && onRowClick(user)}
+              onClick={handleRowClick(user)}
             >
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
@@ -86,4 +91,4 @@ const UserTable: React.FC<UserTableProps> = ({
   );
 };
 
-export default UserTable;
+export default memo(UserTable);

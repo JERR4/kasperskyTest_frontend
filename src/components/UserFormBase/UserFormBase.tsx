@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import {
   Box,
   Button,
@@ -156,4 +156,4 @@ const UserFormBase: React.FC<Props> = ({
   );
 };
 
-export default UserFormBase;
+export default memo(UserFormBase);

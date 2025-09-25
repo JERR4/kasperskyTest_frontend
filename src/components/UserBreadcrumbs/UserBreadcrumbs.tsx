@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Breadcrumbs, Link, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -21,4 +21,4 @@ const UserBreadcrumbs: React.FC<Props> = ({ userName }) => {
   );
 };
 
-export default UserBreadcrumbs;
+export default memo(UserBreadcrumbs);

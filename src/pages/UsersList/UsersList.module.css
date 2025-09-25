@@ -1,0 +1,37 @@
+.outerBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.userFormBox {
+  width: 100%;
+  position: static;
+}
+
+.usersContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-left: 0;
+}
+
+@media (min-width: 1200px) {
+  .outerBox {
+    flex-direction: row;
+  }
+
+  .userFormBox {
+    max-width: 300px;
+    position: fixed;
+    top: 100px;
+    left: 80px;
+    z-index: 1;
+  }
+
+  .usersContent {
+    box-sizing: border-box;
+    margin-left: 320px;
+  }
+}

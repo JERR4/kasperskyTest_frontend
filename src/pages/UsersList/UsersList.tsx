@@ -1,11 +1,12 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchUsers } from '../../api/users.ts';
 import { fetchGroups } from '../../api/groups.ts';
 import type { Group, User } from '../../types/types.ts';
+import { useDebouncedCallback } from 'use-debounce';
 import UserTable from '../../components/UserTable/UserTable.tsx';
 import Pagination from '../../components/Pagination/Pagination.tsx';
-import './UsersList.css';
+import styles from './UsersList.module.css';
 import {
   Box,
   CircularProgress,
@@ -130,40 +131,39 @@ const UsersList: React.FC = () => {
     void loadUsers();
   }, [page, nameSearch, emailSearch, sortBy, order, selectedGroupId, limit]);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setNameSearch(nameInput);
-    }, 500);
+  const debouncedSetNameSearch = useDebouncedCallback((value: string) => {
+    setNameSearch(value);
+  }, 500);
 
-    return () => clearTimeout(handler);
-  }, [nameInput]);
+  const debouncedSetEmailSearch = useDebouncedCallback((value: string) => {
+    setEmailSearch(value);
+  }, 500);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setEmailSearch(emailInput);
-    }, 500);
+  const handleSort = useCallback(
+    (field: 'name' | 'email' | 'age') => {
+      if (sortBy === field) {
+        setOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setSortBy(field);
+        setOrder('asc');
+      }
+    },
+    [sortBy],
+  );
 
-    return () => clearTimeout(handler);
-  }, [emailInput]);
-
-  const handleSort = (field: 'name' | 'email' | 'age') => {
-    if (sortBy === field) {
-      setOrder(order === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setOrder('asc');
-    }
-  };
+  const handleUserCreated = useCallback(() => {
+    void loadUsers();
+  }, [page, limit, nameSearch, emailSearch, sortBy, order, selectedGroupId]);
 
   return (
-    <Box className={'outerBox'}>
+    <Box className={styles.outerBox}>
       <Helmet>
         <title>Список сотрудников</title>
       </Helmet>
-      <Box className="userFormBox">
-        <UserForm groups={groups} onUserCreated={() => void loadUsers()} />
+      <Box className={styles.userFormBox}>
+        <UserForm groups={groups} onUserCreated={handleUserCreated} />
       </Box>
-      <Box className="usersContent">
+      <Box className={styles.usersContent}>
         <Typography variant="h5" mb={2}>
           Список сотрудников
         </Typography>
@@ -172,12 +172,18 @@ const UsersList: React.FC = () => {
           <TextField
             label="Искать по имени"
             value={nameInput}
-            onChange={(e) => setNameInput(e.target.value)}
+            onChange={(e) => {
+              setNameInput(e.target.value);
+              debouncedSetNameSearch(e.target.value);
+            }}
           />
           <TextField
             label="Искать по Email"
             value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
+            onChange={(e) => {
+              setEmailInput(e.target.value);
+              debouncedSetEmailSearch(e.target.value);
+            }}
           />
           <FormControl sx={{ minWidth: 180 }}>
             <InputLabel>Группа</InputLabel>
@@ -264,4 +270,4 @@ const UsersList: React.FC = () => {
   );
 };
 
-export default memo(UsersList);
+export default UsersList;

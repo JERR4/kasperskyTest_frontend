@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Pagination as MuiPagination, Stack } from '@mui/material';
 
 interface PaginationProps {
@@ -55,4 +55,4 @@ const Pagination: React.FC<PaginationProps> = ({ page, total, limit, onChange })
   );
 };
 
-export default Pagination;
+export default memo(Pagination);

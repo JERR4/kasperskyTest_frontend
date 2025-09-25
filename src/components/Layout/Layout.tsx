@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../Header/Header.tsx';
-import './Layout.css';
+import styles from './Layout.module.css';
 
 type LayoutProps = {
   toggleTheme: () => void;
@@ -11,7 +11,7 @@ export default function Layout({ toggleTheme, darkMode }: LayoutProps) {
   return (
     <>
       <Header toggleTheme={toggleTheme} darkMode={darkMode} />
-      <main className="main">
+      <main className={styles.main}>
         <Outlet />
       </main>
     </>
