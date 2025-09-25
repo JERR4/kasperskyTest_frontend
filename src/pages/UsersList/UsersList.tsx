@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchUsers } from '../../api/users.ts';
 import { fetchGroups } from '../../api/groups.ts';
@@ -33,7 +33,6 @@ const UsersList: React.FC = () => {
   const [limit] = useState(50);
 
   const [groups, setGroups] = useState<Group[]>([]);
-  const timersRef = useRef<Record<string, number>>({});
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
   const [nameSearch, setNameSearch] = useState(searchParams.get('name') || '');
@@ -146,13 +145,6 @@ const UsersList: React.FC = () => {
 
     return () => clearTimeout(handler);
   }, [emailInput]);
-
-  useEffect(() => {
-    return () => {
-      Object.values(timersRef.current).forEach(clearTimeout);
-      timersRef.current = {};
-    };
-  }, []);
 
   const handleSort = (field: 'name' | 'email' | 'age') => {
     if (sortBy === field) {
