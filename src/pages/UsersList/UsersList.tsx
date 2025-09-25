@@ -7,20 +7,18 @@ import UserTable from '../../components/UserTable.tsx';
 import Pagination from '../../components/Pagination.tsx';
 import './UsersList.css';
 import {
-  Alert,
   Box,
   CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  Slide,
-  type SlideProps,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { TransitionGroup } from 'react-transition-group';
+import { ToastContainer, toast } from 'react-toastify';
+
 import UserForm from '../../components/UserForm.tsx';
 import { Helmet } from 'react-helmet';
 
@@ -28,13 +26,11 @@ const UsersList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  type ErrorItem = { id: string; message: string };
   const width = useWindowWidth();
   const isMobile = width < 640;
 
   const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
-  const [errors, setErrors] = useState<ErrorItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [limit] = useState(50);
 
@@ -52,12 +48,8 @@ const UsersList: React.FC = () => {
   const [order, setOrder] = useState<'asc' | 'desc'>(
     (searchParams.get('order') as 'asc' | 'desc') || 'asc',
   );
-  const [selectedGroupId, setSelectedGroupId] = useState<number>(
-    searchParams.get('group') === 'none'
-      ? NaN
-      : searchParams.get('group')
-        ? Number(searchParams.get('group'))
-        : -1,
+  const [selectedGroupId, setSelectedGroupId] = useState<string | number>(
+    searchParams.get('group') || -1,
   );
 
   useEffect(() => {
@@ -67,11 +59,7 @@ const UsersList: React.FC = () => {
     if (emailSearch) params.email = emailSearch;
     if (sortBy !== 'name') params.sortBy = sortBy;
     if (order !== 'asc') params.order = order;
-    if (selectedGroupId === -1) {
-      // не указываем — "любая группа"
-    } else if (Number.isNaN(selectedGroupId)) {
-      params.group = 'none';
-    } else {
+    if (selectedGroupId !== -1) {
       params.group = String(selectedGroupId);
     }
     setSearchParams(params, { replace: true });
@@ -87,29 +75,12 @@ const UsersList: React.FC = () => {
     setOrder((searchParams.get('order') as 'asc' | 'desc') || 'asc');
     setSelectedGroupId(
       searchParams.get('group') === 'none'
-        ? NaN
+        ? 'none'
         : searchParams.get('group')
           ? Number(searchParams.get('group'))
           : -1,
     );
   }, [searchParams]);
-
-  const addError = (message: string, ttl = 4000) => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    setErrors((prev) => [...prev, { id, message }]);
-
-    timersRef.current[id] = window.setTimeout(() => {
-      removeError(id);
-    }, ttl);
-  };
-
-  function SlideTransition(props: SlideProps & { children: React.ReactElement }) {
-    return (
-      <Slide {...props} direction="left">
-        {props.children}
-      </Slide>
-    );
-  }
 
   function useWindowWidth() {
     const [width, setWidth] = useState(window.innerWidth);
@@ -129,7 +100,7 @@ const UsersList: React.FC = () => {
         const allGroups = await fetchGroups();
         setGroups(allGroups);
       } catch {
-        addError('Не удалось получить группы');
+        toast.error('Не удалось получить группы');
       }
     };
 
@@ -152,7 +123,7 @@ const UsersList: React.FC = () => {
       setUsers(res.data);
       setTotal(res.total);
     } catch {
-      addError('Не удалось получить список пользователей');
+      toast.error('Не удалось получить список пользователей');
     } finally {
       setLoading(false);
     }
@@ -177,16 +148,6 @@ const UsersList: React.FC = () => {
 
     return () => clearTimeout(handler);
   }, [emailInput]);
-
-  const removeError = (id: string) => {
-    setErrors((prev) => prev.filter((e) => e.id !== id));
-
-    const t = timersRef.current[id];
-    if (t) {
-      clearTimeout(t);
-      delete timersRef.current[id];
-    }
-  };
 
   useEffect(() => {
     return () => {
@@ -306,25 +267,8 @@ const UsersList: React.FC = () => {
           </Box>
         )}
 
+        <ToastContainer position="bottom-right" />
         <Pagination page={page} total={total} limit={limit} onChange={setPage} />
-        <Stack spacing={1} sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 2 }}>
-          <Stack
-            spacing={1}
-            sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 3, maxWidth: 320 }}
-          >
-            <TransitionGroup>
-              {errors.map((err) => (
-                <SlideTransition key={err.id}>
-                  <Box mb={1}>
-                    <Alert severity="error" onClose={() => removeError(err.id)}>
-                      {err.message}
-                    </Alert>
-                  </Box>
-                </SlideTransition>
-              ))}
-            </TransitionGroup>
-          </Stack>
-        </Stack>
       </Box>
     </Box>
   );

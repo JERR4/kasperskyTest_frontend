@@ -8,7 +8,7 @@ export const fetchUsers = async (
   emailSearch?: string,
   sort?: 'name' | 'email' | 'age',
   order?: 'ASC' | 'DESC',
-  groupId?: number,
+  groupId?: number | string,
 ): Promise<UsersResponse> => {
   const params: Record<string, string | number> = { page, limit };
 
