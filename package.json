@@ -9,8 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "prepare": "husky install",
-    "lint:fix": "eslint public/src --ext .ts,.js --fix",
-    "format": "prettier --write public/src/**/*.{ts,js,tsx,jsx,html,css}"
+    "lint:fix": "eslint src --ext .ts,.js --fix",
+    "format": "prettier --write src/**/*.{ts,js,tsx,jsx,html,css}"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -39,13 +39,12 @@
   },
 
   "lint-staged": {
-    "public/src/**/*.{ts,js,jsx,tsx}": [
+    "src/**/*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write"
     ],
-    "public/src/**/*.{css,html}": [
-      "prettier --write",
-      "stylelint --fix"
+    "src/**/*.{css,html,json,md}": [
+      "prettier --write"
     ]
   }
 }
