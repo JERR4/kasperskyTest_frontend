@@ -19,6 +19,7 @@ import {
   Button,
 } from '@mui/material';
 import './UserPage.css';
+import { StatusCodes } from 'http-status-codes';
 
 const UserPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -81,7 +82,7 @@ const UserPage: React.FC = () => {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       const error = err as AxiosError;
-      if (error.response?.status === 409) {
+      if (error.response?.status === StatusCodes.CONFLICT) {
         setError('Пользователь с таким email уже существует');
       } else {
         setError('Не удалось сохранить пользователя');

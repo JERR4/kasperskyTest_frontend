@@ -3,6 +3,7 @@ import UserFormBase from '../UserFormBase/UserFormBase.tsx';
 import type { Group } from '../../types/types.ts';
 import { createUser } from '../../api/users.ts';
 import type { AxiosError } from 'axios';
+import { StatusCodes } from 'http-status-codes';
 
 type Props = {
   groups: Group[];
@@ -47,7 +48,7 @@ const UserForm: React.FC<Props> = ({ groups, onUserCreated }) => {
       setTimeout(() => setSuccess(false), 4000);
     } catch (err) {
       const error = err as AxiosError;
-      if (error.response?.status === 409) {
+      if (error.response?.status === StatusCodes.CONFLICT) {
         setError('Пользователь с таким email уже существует');
       } else {
         setError('Не удалось создать пользователя');

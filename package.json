@@ -18,6 +18,7 @@
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "axios": "^1.12.2",
+    "http-status-codes": "^2.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-helmet": "^6.1.0",
