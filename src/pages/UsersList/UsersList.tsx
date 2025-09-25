@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchUsers } from '../../api/users.ts';
 import { fetchGroups } from '../../api/groups.ts';
@@ -307,10 +307,10 @@ const UsersList: React.FC = () => {
         )}
 
         <Pagination page={page} total={total} limit={limit} onChange={setPage} />
-        <Stack spacing={1} sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1400 }}>
+        <Stack spacing={1} sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 2 }}>
           <Stack
             spacing={1}
-            sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1400, maxWidth: 320 }}
+            sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 3, maxWidth: 320 }}
           >
             <TransitionGroup>
               {errors.map((err) => (
@@ -330,4 +330,4 @@ const UsersList: React.FC = () => {
   );
 };
 
-export default UsersList;
+export default memo(UsersList);
